@@ -22,11 +22,66 @@ class Customer < ApplicationRecord
 
   def self.any_candice
     # YOUR CODE HERE to return all customer(s) whose first name is Candice
-    # probably something like:  Customer.where(....)
+    where(first: 'Candice')
   end
 
   def self.with_valid_email
     # YOUR CODE HERE to return only customers with valid email addresses (containing '@')
+    where("email LIKE ?", "%@%")
   end
-  # etc. - see README.md for more details
+
+  def self.with_dot_org_email
+    # YOUR CODE HERE to return customers whose email ends in '.org'
+    where("email LIKE ?", "%@%.org")
+  end
+
+  def self.with_invalid_email
+    # YOUR CODE HERE to return customers with nonblank emails that do not contain '@'
+    where("email NOT LIKE ?", "%@%")
+  end
+
+  def self.with_blank_email
+    # YOUR CODE HERE to return customers with a blank email
+    where(email: [nil, ''])
+  end
+
+  def self.born_before_1980
+    # YOUR CODE HERE to return customers born before 1 Jan 1980
+    where("birthdate < ?", Date.new(1980, 1, 1))
+  end
+
+  def self.with_valid_email_and_born_before_1980
+    # YOUR CODE HERE to return customers with a valid email AND born before 1 Jan 1980
+    where("birthdate < ? AND email LIKE ?", Date.new(1980, 1, 1), "%@%")
+  end
+
+  def self.last_names_starting_with_b
+    # YOUR CODE HERE to return customers whose last name starts with 'B', sorted by birthdate
+    where("last LIKE ?", "B%").order(:birthdate)
+  end
+
+  def self.twenty_youngest
+    # YOUR CODE HERE to return the 20 youngest customers (no .where needed)
+    order(birthdate: :desc).limit(20)
+  end
+
+  def self.update_gussie_murray_birthdate
+    # YOUR CODE HERE to set Gussie Murray's birthdate to February 8, 2004
+    find_by(first: 'Gussie', last: 'Murray').update(birthdate: Time.zone.parse('2004-02-08'))
+  end
+
+  def self.change_all_invalid_emails_to_blank
+    # YOUR CODE HERE to set every invalid (nonblank, no '@') email to blank
+    with_invalid_email.update_all(email: '')
+  end
+
+  def self.delete_meggie_herman
+    # YOUR CODE HERE to delete the customer Meggie Herman
+    find_by(first: 'Meggie', last: 'Herman').destroy
+  end
+
+  def self.delete_everyone_born_before_1978
+    # YOUR CODE HERE to delete all customers born on or before 31 Dec 1977
+    where("birthdate < ?", Date.new(1978, 1, 1)).destroy_all
+  end
 end
